@@ -98,7 +98,6 @@ const WORDS = ["KAif", "name2", "name3", "name4","name5"];
 const TECH_STACK = ["Kaif", "name2", "name3", "name4", "name5"];
 const SOCIAL_LINKS = [
   { icon: Github, link: "https://github.com/genius4236" },
-  // { icon: Linkedin, link: "https://www.linkedin.com/in/md-khizer-0b31a5314" },
   { icon: Instagram, link: "https://www.instagram.com/md_kaif_0111/" },
 ];
 

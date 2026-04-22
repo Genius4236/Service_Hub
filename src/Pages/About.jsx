@@ -282,7 +282,7 @@ const AboutPage = () => {
 
             <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 lg:gap-4 lg:px-0 w-full">
               <a
-                href="3VC22EC057_KHIZER_ECE.pdf"
+                href="#"
                 className="w-full lg:w-auto"
               >
                 
