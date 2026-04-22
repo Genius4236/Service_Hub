@@ -1,0 +1,448 @@
+import React, { useEffect, memo, useMemo, useState } from "react";
+import {
+  FileText,
+  Code,
+  Award,
+  Globe,
+  ArrowUpRight,
+  Sparkles,
+  UserCheck,
+  Plus,
+  Trash2,
+  Phone,
+  Link as LinkIcon,
+} from "lucide-react";
+import AOS from "aos";
+import "aos/dist/aos.css";
+
+// Memoized Components
+const Header = memo(() => (
+  <div className="text-center lg:mb-8 mb-2 px-[5%]">
+    <div className="inline-block relative group">
+      <h2
+        className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#a855f7]"
+        data-aos="zoom-in-up"
+        data-aos-duration="600"
+      >
+        About
+      </h2>
+    </div>
+    <p
+      className="mt-2 text-gray-400 max-w-2xl mx-auto text-base sm:text-lg flex items-center justify-center gap-2"
+      data-aos="zoom-in-up"
+      data-aos-duration="800"
+    >
+      <Sparkles className="w-5 h-5 text-purple-400" />
+      Online Service Management System
+      <Sparkles className="w-5 h-5 text-purple-400" />
+    </p>
+  </div>
+));
+
+const ProfileImage = memo(() => (
+  <div className="flex justify-end items-center sm:p-12 sm:py-0 sm:pb-0 p-0 py-2 pb-2">
+    <div className="relative group" data-aos="fade-up" data-aos-duration="1000">
+      {/* Optimized gradient backgrounds with reduced complexity for mobile */}
+      <div className="absolute -inset-6 opacity-[25%] z-0 hidden sm:block">
+        <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-indigo-500 to-purple-600 rounded-full blur-2xl animate-spin-slower" />
+        <div className="absolute inset-0 bg-gradient-to-l from-fuchsia-500 via-rose-500 to-pink-600 rounded-full blur-2xl animate-pulse-slow opacity-50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-blue-600 via-cyan-500 to-teal-400 rounded-full blur-2xl animate-float opacity-50" />
+      </div>
+      <div className="relative">
+        <div className="w-72 h-72 sm:w-80 sm:h-80 rounded-full overflow-hidden shadow-[0_0_40px_rgba(120,119,198,0.3)] transform transition-all duration-700 group-hover:scale-105">
+          <div className="absolute inset-0 border-4 border-white/20 rounded-full z-20 transition-all duration-700 group-hover:border-white/40 group-hover:scale-105" />
+
+          {/* Optimized overlay effects - disabled on mobile */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 z-10 transition-opacity duration-700 group-hover:opacity-0 hidden sm:block" />
+          <div className="absolute inset-0 bg-gradient-to-t from-purple-500/20 via-transparent to-blue-500/20 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 hidden sm:block" />
+
+          <img
+            src="/photo.png"
+            alt="Profile"
+            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-2"
+            loading="lazy"
+          />
+
+          {/* Advanced hover effects - desktop only */}
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-700 z-20 hidden sm:block">
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+            <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-white/10 to-transparent transform translate-y-full group-hover:-translate-y-full transition-transform duration-1000 delay-100" />
+            <div className="absolute inset-0 rounded-full border-8 border-white/10 scale-0 group-hover:scale-100 transition-transform duration-700 animate-pulse-slow" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+));
+
+const StatCard = memo(
+  ({ icon: Icon, color, value, label, description, animation }) => (
+    <div
+      data-aos={animation}
+      data-aos-duration={1300}
+      className="relative group"
+    >
+      <div className="relative z-10 bg-gray-900/50 backdrop-blur-lg rounded-2xl p-6 border border-white/10 overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl h-full flex flex-col justify-between">
+        <div
+          className={`absolute -z-10 inset-0 bg-gradient-to-br ${color} opacity-10 group-hover:opacity-20 transition-opacity duration-300`}
+        ></div>
+
+        <div className="flex items-center justify-between mb-4">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center bg-white/10 transition-transform group-hover:rotate-6">
+            <Icon className="w-8 h-8 text-white" />
+          </div>
+          <span
+            className="text-4xl font-bold text-white"
+            data-aos="fade-up-left"
+            data-aos-duration="1500"
+            data-aos-anchor-placement="top-bottom"
+          >
+            {value}
+          </span>
+        </div>
+
+        <div>
+          <p
+            className="text-sm uppercase tracking-wider text-gray-300 mb-2"
+            data-aos="fade-up"
+            data-aos-duration="800"
+            data-aos-anchor-placement="top-bottom"
+          >
+            {label}
+          </p>
+          <div className="flex items-center justify-between">
+            <p
+              className="text-xs text-gray-400"
+              data-aos="fade-up"
+              data-aos-duration="1000"
+              data-aos-anchor-placement="top-bottom"
+            >
+              {description}
+            </p>
+            <ArrowUpRight className="w-4 h-4 text-white/50 group-hover:text-white transition-colors" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+);
+
+const AboutPage = () => {
+  // State for managing services list
+  const [services, setServices] = useState([]);
+  const [newService, setNewService] = useState({ name: "", number: "", link: "" });
+
+  // Load services from localStorage on mount
+  useEffect(() => {
+    const storedServices = JSON.parse(localStorage.getItem("servicesList") || "[]");
+    setServices(storedServices);
+  }, []);
+
+  // Save services to localStorage
+  const saveServices = (updatedServices) => {
+    localStorage.setItem("servicesList", JSON.stringify(updatedServices));
+    setServices(updatedServices);
+  };
+
+  // Add new service
+  const handleAddService = () => {
+    if (newService.name && newService.number && newService.link) {
+      const service = {
+        id: Date.now(),
+        name: newService.name,
+        number: newService.number,
+        link: newService.link,
+      };
+      const updatedServices = [...services, service];
+      saveServices(updatedServices);
+      setNewService({ name: "", number: "", link: "" });
+    }
+  };
+
+  // Delete service
+  const handleDeleteService = (id) => {
+    const updatedServices = services.filter((s) => s.id !== id);
+    saveServices(updatedServices);
+  };
+
+  // Memoized calculations
+  const { totalProjects, totalCertificates, YearExperience } = useMemo(() => {
+    const storedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
+    const storedCertificates = JSON.parse(
+      localStorage.getItem("certificates") || "[]"
+    );
+
+    const startDate = new Date("2023-11-06");
+    const today = new Date();
+    const experience =
+      today.getFullYear() -
+      startDate.getFullYear() -
+      (today <
+      new Date(today.getFullYear(), startDate.getMonth(), startDate.getDate())
+        ? 1
+        : 0);
+
+    return {
+      totalProjects: storedProjects.length,
+      totalCertificates: storedCertificates.length,
+      YearExperience: experience,
+    };
+  }, []);
+
+  // Optimized AOS initialization
+  useEffect(() => {
+    const initAOS = () => {
+      AOS.init({
+        once: false,
+      });
+    };
+
+    initAOS();
+
+    // Debounced resize handler
+    let resizeTimer;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(initAOS, 250);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(resizeTimer);
+    };
+  }, []);
+
+  // Memoized stats data
+  const statsData = useMemo(
+    () => [
+      {
+        icon: Code,
+        color: "from-[#6366f1] to-[#a855f7]",
+        value: totalProjects,
+        label: "Total Services",
+        description: "Digital platform where users can access trusted services instantly.",
+        animation: "fade-right",
+      },
+      {
+        icon: Award,
+        color: "from-[#a855f7] to-[#6366f1]",
+        value: totalCertificates,
+        label: "Registered Services",
+        description: "Professional skills validated",
+        animation: "fade-up",
+      },
+      {
+        icon: Globe,
+        color: "from-[#6366f1] to-[#a855f7]",
+        value: YearExperience,
+        label: "UnRegistered Services",
+        description: "Experience in providing services",
+        animation: "fade-left",
+      },
+    ],
+    [totalProjects, totalCertificates, YearExperience]
+  );
+
+  return (
+    <div
+      className="h-auto pb-[10%] text-white overflow-hidden px-[5%] sm:px-[5%] lg:px-[10%] mt-10 sm-mt-0"
+      id="About"
+    >
+      <Header />
+
+      <div className="w-full mx-auto pt-8 sm:pt-12 relative">
+        <div className="flex flex-col-reverse lg:grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div className="space-y-6 text-center lg:text-left">
+            <h2
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold"
+              data-aos="fade-right"
+              data-aos-duration="1000"
+            >
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#a855f7]">
+                Hello!
+              </span>
+              <span
+                className="block mt-2 text-gray-200"
+                data-aos="fade-right"
+                data-aos-duration="1300"
+              >
+              </span>
+            </h2>
+
+            <p
+              className="text-base sm:text-lg lg:text-xl text-gray-400 leading-relaxed text-justify pb-4 sm:pb-0"
+              data-aos="fade-right"
+              data-aos-duration="1500"
+            >
+              The Service Hub is a web-based platform designed to connect users with various service providers such as electricians, plumbers, tutors, cleaners, and managing services in one place.
+              <br></br>
+              Users can easily search for service providers based on the read reviews. The Service Hub is a user-friendly interface to enhance the overall experience for both users and service providers.
+            </p>
+
+            <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 lg:gap-4 lg:px-0 w-full">
+              <a
+                href="3VC22EC057_KHIZER_ECE.pdf"
+                className="w-full lg:w-auto"
+              >
+                
+              </a>
+              <a href="#Portofolio" className="w-full lg:w-auto">
+                <button
+                  data-aos="fade-up"
+                  data-aos-duration="1000"
+                  className="w-full lg:w-auto sm:px-6 py-2 sm:py-3 rounded-lg border border-[#a855f7]/50 text-[#a855f7] font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center lg:justify-start gap-2 hover:bg-[#a855f7]/10 animate-bounce-slow delay-200"
+                >
+                  <Code className="w-4 h-4 sm:w-5 sm:h-5" /> View Service
+                </button>
+              </a>
+            </div>
+          </div>
+
+          <ProfileImage />
+        </div>
+
+        <a href="#Portofolio">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 cursor-pointer">
+            {statsData.map((stat) => (
+              <StatCard key={stat.label} {...stat} />
+            ))}
+          </div>
+        </a>
+      </div>
+      
+        {/* Services List Section */}
+        <div className="mt-20">
+          <h3 
+            className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#a855f7] mb-8 text-center"
+            data-aos="fade-up"
+            data-aos-duration="1000"
+          >
+            UNREGISTERED SERVICES
+          </h3>
+
+          {/* Add Service Form */}
+          <div 
+            className="mb-8 bg-gray-900/50 backdrop-blur-lg rounded-2xl border border-white/10 p-6"
+            data-aos="fade-up"
+            data-aos-duration="1200"
+          >
+            <h4 className="text-lg font-semibold text-gray-300 mb-4">Add New Service</h4>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <input
+                type="text"
+                placeholder="Service Name"
+                value={newService.name}
+                onChange={(e) =>
+                  setNewService({ ...newService, name: e.target.value })
+                }
+                className="bg-white/10 border border-white/20 rounded px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#a855f7]"
+              />
+              <input
+                type="text"
+                placeholder="+92-XXX-XXXXXX"
+                value={newService.number}
+                onChange={(e) =>
+                  setNewService({ ...newService, number: e.target.value })
+                }
+                className="bg-white/10 border border-white/20 rounded px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#a855f7]"
+              />
+              <input
+                type="text"
+                placeholder="https://example.com"
+                value={newService.link}
+                onChange={(e) =>
+                  setNewService({ ...newService, link: e.target.value })
+                }
+                className="bg-white/10 border border-white/20 rounded px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#a855f7]"
+              />
+              <button
+                onClick={handleAddService}
+                className="bg-gradient-to-r from-[#6366f1] to-[#a855f7] hover:shadow-lg hover:shadow-[#a855f7]/50 text-white font-medium px-6 py-2 rounded transition-all duration-300 flex items-center justify-center gap-2"
+              >
+                <Plus className="w-4 h-4" /> Add
+              </button>
+            </div>
+          </div>
+
+          {/* Services List */}
+          <div className="space-y-3">
+            {services.length > 0 ? (
+              services.map((service) => (
+                <div
+                  key={service.id}
+                  className="bg-gray-900/50 backdrop-blur-lg rounded-lg border border-white/10 p-4 hover:border-white/20 transition-all duration-300 flex items-center justify-between group"
+                  data-aos="fade-up"
+                  data-aos-duration="800"
+                >
+                  <div className="flex-1">
+                    <h4 className="text-lg font-semibold text-white mb-2">
+                      {service.name}
+                    </h4>
+                    <div className="flex flex-col md:flex-row gap-4">
+                      <div className="flex items-center gap-2 text-gray-300">
+                        <Phone className="w-4 h-4 text-[#a855f7]" />
+                        <a href={`tel:${service.number}`} className="hover:text-[#a855f7] transition-colors">
+                          {service.number}
+                        </a>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-300">
+                        <LinkIcon className="w-4 h-4 text-[#6366f1]" />
+                        <a 
+                          href={service.link} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-[#6366f1] hover:text-[#a855f7] transition-colors truncate"
+                        >
+                          View Link →
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteService(service.id)}
+                    className="ml-4 text-red-400 hover:text-red-300 hover:bg-red-500/10 p-2 rounded transition-all opacity-0 group-hover:opacity-100"
+                    title="Delete"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              ))
+            ) : (
+              <div className="bg-gray-900/50 backdrop-blur-lg rounded-lg border border-white/10 p-8 text-center">
+                <p className="text-gray-400">No services added yet. Add one to get started!</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+      <style jsx>{`
+        @keyframes float {
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+        }
+        @keyframes spin-slower {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+        .animate-bounce-slow {
+          animation: bounce 3s infinite;
+        }
+        .animate-pulse-slow {
+          animation: pulse 3s infinite;
+        }
+        .animate-spin-slower {
+          animation: spin-slower 8s linear infinite;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default memo(AboutPage);
