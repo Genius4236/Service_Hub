@@ -1,20 +1,20 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore"
-import { collection, addDoc, getDocs } from "@firebase/firestore"; // Perbarui ini
-
+import { getFirestore } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, deleteDoc } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBzDu4zb0H3zknEU0SoHia8J8li12ajf5s",
-  authDomain: "service-hub-9acb9.firebaseapp.com",
-  projectId: "service-hub-9acb9",
-  storageBucket: "service-hub-9acb9.firebasestorage.app",
-  messagingSenderId: "469889389155",
-  appId: "1:469889389155:web:ac3496c52eedf514a4de56"
+  apiKey: "AIzaSyCB5Bc2EB-87ViEyw_k6Y0dJ0mSh8wWc6o",
+  authDomain: "portfolio-22c57.firebaseapp.com",
+  projectId: "portfolio-22c57",
+  storageBucket: "portfolio-22c57.firebasestorage.app",
+  messagingSenderId: "666498735012",
+  appId: "1:666498735012:web:27fada03a5166b2574bf31",
+  measurementId: "G-EVWG93WY0J"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export { db, collection, addDoc };
+export { db, collection, addDoc, getDocs, doc, deleteDoc };

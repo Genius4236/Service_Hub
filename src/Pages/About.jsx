@@ -1,4 +1,5 @@
 import React, { useEffect, memo, useMemo, useState } from "react";
+import { db, collection, getDocs, addDoc, doc, deleteDoc } from "../firebase";
 import {
   FileText,
   Code,
@@ -132,37 +133,60 @@ const AboutPage = () => {
   const [services, setServices] = useState([]);
   const [newService, setNewService] = useState({ name: "", number: "", link: "" });
 
-  // Load services from localStorage on mount
+  // Firestore
+  // collection name decided by user: "projects"
+  // each doc stores { name, number, link }
+  // and we use Firestore doc id as `id` in UI.
   useEffect(() => {
-    const storedServices = JSON.parse(localStorage.getItem("servicesList") || "[]");
-    setServices(storedServices);
+    const loadServices = async () => {
+      try {
+        const snap = await getDocs(collection(db, "Services"));
+        const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        setServices(docs);
+      } catch (e) {
+        console.error("Failed to load services from Firestore:", e);
+      }
+    };
+
+    loadServices();
   }, []);
 
-  // Save services to localStorage
-  const saveServices = (updatedServices) => {
-    localStorage.setItem("servicesList", JSON.stringify(updatedServices));
-    setServices(updatedServices);
-  };
-
   // Add new service
-  const handleAddService = () => {
+  const handleAddService = async () => {
     if (newService.name && newService.number && newService.link) {
-      const service = {
-        id: Date.now(),
-        name: newService.name,
-        number: newService.number,
-        link: newService.link,
-      };
-      const updatedServices = [...services, service];
-      saveServices(updatedServices);
-      setNewService({ name: "", number: "", link: "" });
+      try {
+        const payload = {
+          name: newService.name,
+          number: newService.number,
+          link: newService.link,
+        };
+
+        await addDoc(collection(db, "Services"), payload);
+
+        // reload
+        const snap = await getDocs(collection(db, "Services"));
+        const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        setServices(docs);
+
+        setNewService({ name: "", number: "", link: "" });
+      } catch (e) {
+        console.error("Failed to add service:", e);
+      }
     }
   };
 
   // Delete service
-  const handleDeleteService = (id) => {
-    const updatedServices = services.filter((s) => s.id !== id);
-    saveServices(updatedServices);
+  const handleDeleteService = async (id) => {
+    try {
+      await deleteDoc(doc(db, "Services", id));
+
+      // reload
+      const snap = await getDocs(collection(db, "Services"));
+      const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      setServices(docs);
+    } catch (e) {
+      console.error("Failed to delete service:", e);
+    }
   };
 
   // Memoized calculations
