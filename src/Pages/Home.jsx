@@ -94,10 +94,10 @@ const SocialLink = memo(({ icon: Icon, link }) => (
 const TYPING_SPEED = 100;
 const ERASING_SPEED = 50;
 const PAUSE_DURATION = 2000;
-const WORDS = ["KAif", "name2", "name3", "name4","name5"];
-const TECH_STACK = ["Kaif", "name2", "name3", "name4", "name5"];
+const WORDS = ["NUSRATH", "MD KAIF", "SHABAAZ ALI", "TAISEENA","MUSKAN BEGUM"];
+const TECH_STACK = ["NUSRATH", "MD KAIF", "SHABAAZ ALI", "TAISEENA", "MUSKAN BEGUM"];
 const SOCIAL_LINKS = [
-  { icon: Github, link: "https://github.com/genius4236" },
+  { icon: Github, link: "https://github.com/" },
   { icon: Instagram, link: "https://www.instagram.com/md_kaif_0111/" },
 ];
 

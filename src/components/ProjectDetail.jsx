@@ -115,7 +115,7 @@ const ProjectDetails = () => {
         ...selectedProject,
         Features: selectedProject.Features || [],
         TechStack: selectedProject.TechStack || [],
-        Github: selectedProject.Github || 'https://github.com/genius4236',
+        Github: selectedProject.Github || 'https://github.com/',
       };
       setProject(enhancedProject);
     }
