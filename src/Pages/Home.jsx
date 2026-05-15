@@ -210,10 +210,10 @@ const Home = () => {
                   data-aos="fade-up"
                   data-aos-delay="1000"
                 >
-                 I am a software developer with a passion for building scalable and efficient software solutions.
+                  Welcome to Service Hub!
                 </p>
 
-                {/* Tech Stack */}
+                {/* Tech Stack */}  
                 <div
                   className="flex flex-wrap gap-3 justify-start"
                   data-aos="fade-up"
